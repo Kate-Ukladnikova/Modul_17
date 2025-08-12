@@ -1,0 +1,7 @@
+Generic single-database configuration.
+# pip install alembic
+# alembic init app/migrations
+# alembic revision --autogenerate -m "Initial migration"
+# alembic upgrade head
+# uvicorn main:app --reload
+# pip freeze > requirements.txt
