@@ -8,10 +8,10 @@ from sqlalchemy.orm import relationship
 
 from alembic import context
 
-# from app.backend.db import Base
+
 class Base(DeclarativeBase):
     pass
-# from app.models import *
+#
 class User(Base):
     __tablename__ = 'users'
     __table_args__ = {'extend_existing': True}
