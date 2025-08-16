@@ -6,12 +6,6 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.orm import relationship, DeclarativeBase
 from sqlalchemy.schema import CreateTable
 
-# from Modul_17.app.models import User
-
-# после активации виртуального окружения (в терминале: myenv\\Scripts\\activate) переходим в папку директории проекта: cd app
-from slugify import slugify
-
-
 class Task(Base):
     __tablename__ = 'tasks'
     __table_args__ = {'extend_existing': True}

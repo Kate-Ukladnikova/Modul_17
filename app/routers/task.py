@@ -22,6 +22,8 @@ from sqlalchemy import insert, select, update, delete
 # Функция создания slug-строки
 from slugify import slugify
 
+from models.user import User
+
 router = APIRouter(prefix="/task", tags=["task"])
 
 @router.get("/all_tasks", summary="Receive all tasks")
@@ -35,24 +37,28 @@ async def task_by_id(task_id: int, db: Annotated[Session, Depends(get_db)]):
     if task is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail='Task was not found')
+            detail='User was not found')
     return task
 
 # к нашему роутеру коннектим блок, который будет позволять добавлять новые элементы:
 @router.post("/create")
-async def create_task(user_id: int, new_user: CreateUser, new_task: CreateTask, db: Annotated[Session, Depends(get_db)]):
-    slug = slugify(new_task.title)
-    task_data = new_task.dict()
-    task_data['slug'] = slug
-    query = select(Task).where(Task.id == user_id)
-    user = db.scalar(query)
-    if user:
-        db.execute(insert(Task).where(Task.id == user_id).values(**new_task.dict()))
-        db.commit()
-        return {"status_code": status.HTTP_200_OK, "transaction": "User update is successful!"}
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="User was not found")
+async def create_task(create_tasks: CreateTask, user_id: int, db: Annotated[Session, Depends(get_db)]):
+    user = db.scalar(select(User).where(User.id == user_id))
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task was not found")
+
+    new_task = Task(
+        priority=0,
+        user_id=user_id,
+        content=create_tasks.content,
+        title=create_tasks.title,
+        completed=False,
+        slug=slugify(create_tasks.title)
+    )
+
+    db.add(new_task)
+    db.commit()
+    return {'status_code': status.HTTP_201_CREATED, 'transaction': 'Successful'}
 
 @router.put("/update")
 async def update_task():
