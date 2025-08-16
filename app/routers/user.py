@@ -13,6 +13,7 @@ from backend.db_depends import get_db
 from typing import Annotated
 
 from models.user import User
+from models.task import Task
 
 from schemas import CreateUser, UpdateUser, CreateTask, UpdateTask
 # Функции работы с записями.
@@ -72,8 +73,19 @@ async def delete_user(db: Annotated[Session, Depends(get_db)], user_id: int):
     user = db.scalar(query)
     if user:
         db.execute(delete(User).where(User.id == user_id))
+        db.execute(delete(Task).where(Task.user_id == user_id))
         db.commit()
         return {"status_code": status.HTTP_200_OK, "transaction": "User deletion successful!"}
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="User was not found")
+
+@router.get("/{user_id}/tasks")
+async def tasks_by_user_id(db: Annotated[Session, Depends(get_db)], user_id: int):
+    query = select(Task).where(Task.user_id == user_id)
+    tasks = db.scalars(query).all()
+    if tasks is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No tasks found for this user")
+    return tasks

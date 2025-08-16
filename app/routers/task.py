@@ -45,7 +45,7 @@ async def task_by_id(task_id: int, db: Annotated[Session, Depends(get_db)]):
 async def create_task(create_tasks: CreateTask, user_id: int, db: Annotated[Session, Depends(get_db)]):
     user = db.scalar(select(User).where(User.id == user_id))
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task was not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User was not found")
 
     new_task = Task(
         priority=0,
@@ -61,8 +61,25 @@ async def create_task(create_tasks: CreateTask, user_id: int, db: Annotated[Sess
     return {'status_code': status.HTTP_201_CREATED, 'transaction': 'Successful'}
 
 @router.put("/update")
-async def update_task():
-    pass
+async def update_task(task_id: int, update_task: UpdateTask, db: Annotated[Session, Depends(get_db)]):
+    query = select(Task).where(Task.id == task_id)
+    task = db.scalar(query)
+    if task:
+        db.execute(update(User).where(Task.id == task_id).values(**update_task.dict()))
+        db.commit()
+        return {"status_code": status.HTTP_200_OK, "transaction": "Task update is successful!"}
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Task was not found")
+
 @router.delete("/delete")
-async def delete_task():
-    pass
+async def delete_task(db: Annotated[Session, Depends(get_db)], task_id: int):
+    query = select(User).where(Task.id == task_id)
+    task = db.scalar(query)
+    if task:
+        db.execute(delete(Task).where(Task.id == task_id))
+        db.commit()
+        return {"status_code": status.HTTP_200_OK, "transaction": "Task deletion successful!"}
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Task was not found")
