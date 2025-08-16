@@ -1,4 +1,5 @@
-# Модели баз данных:
+# Модели баз данных
+
 from backend.db import Base
 
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean

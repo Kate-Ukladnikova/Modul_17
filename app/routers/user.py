@@ -23,7 +23,7 @@ from slugify import slugify
 # Предварительно создадим объект APIRouter, позволяющий разнести маршруты по модулям.
 router = APIRouter(prefix="/user", tags=["user"])
 
-@router.get("/all_users", summary="Получить всех пользователей")
+@router.get("/all_users", summary="Receive all users")
 async def get_all_users(db: Annotated[Session, Depends(get_db)]):
     users = db.scalars(select(User)).all()
     return users

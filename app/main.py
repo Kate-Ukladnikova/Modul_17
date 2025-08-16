@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from routers import user
 from backend.db import engine, Base
 
-# from routers import task
+from routers import task
 
 # создаем сущность FastAPI()
 app = FastAPI()
@@ -27,7 +27,7 @@ async def info():
 
 # подключаем роутеры
 app.include_router(user.router)
-# app.include_router(task.router)
+app.include_router(task.router)
 
 # Создаем таблицы в базе данных
 Base.metadata.create_all(bind=engine)
