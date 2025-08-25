@@ -4,7 +4,7 @@
 # SQLAlchemy и маршрутизацию FastAPI.
 # Задача "Маршрутизация заданий":
 # Необходимо описать логику функций в task.py, используя ранее
-# написанные маршруты FastAPI.
+# написанные маршруты FastAPI-.
 
 from fastapi import APIRouter, Depends, status, HTTPException
 # Сессия БД
